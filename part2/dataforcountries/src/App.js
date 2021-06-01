@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-// JUST WRITE A DIFFERENT COMPONENT FOR THE 2.13 BUTTONS
 
 const Country = ({ country, setFilter }) => {
   return (
@@ -12,6 +11,17 @@ const Country = ({ country, setFilter }) => {
 }
 
 const FilteredCountry = ({ country }) => {
+  const [weather, setWeather] = useState([])
+
+  useEffect(() => {
+  const api_key = process.env.REACT_APP_API_KEY
+  const capital = country.capital
+    axios
+      .get(`http://api.weatherstack.com/current?access_key=${api_key}&query=${capital}`)
+      .then(response => setWeather(response.data))
+  }, [])
+  console.log('ce cacat esti', weather.current.temperature)
+
   return (
     <>
       <h1>{country.name}</h1>
@@ -31,6 +41,15 @@ const FilteredCountry = ({ country }) => {
 	width='100'
 	heigth='100'
       />
+      <h2>Weather in {country.capital}</h2>
+      <div>temperature: {weather.current.temperature}</div>
+      <img
+	src={weather.current.weather_icons}
+	alt={weather.current.weather_description}
+	width='50'
+	heigth='50'
+      />
+      <div>wind: {weather.current.wind_speed} mph direction {weather.current.wind_dir}</div>
     </>
   )
 }
@@ -69,21 +88,12 @@ const Button = ({ country, setFilter }) => {
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
-  const [weather, setWeather] = useState([])
 
   useEffect(() => {
     axios
       .get('http://restcountries.eu/rest/v2/all')
       .then(response => setCountries(response.data) )
   }, [])
-
-  useEffect(() => {
-    axios
-      .get('http://api.weatherstack.com/current')
-      .then(response => setWeather(response.data))
-  }, [])
-  
-  console.log('weather', weather)
 
   const handleFilter = (event) => setFilter(event.target.value)
 
