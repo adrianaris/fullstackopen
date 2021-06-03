@@ -10,8 +10,28 @@ const Country = ({ country, setFilter }) => {
   )
 }
 
+const Weather = ({country, weather}) => {
+  if (weather.current === undefined) {
+    return null
+  } else {
+    return (
+      <>
+      <h2>Weather in {country.capital}</h2>
+	<div>temperature: {weather.current.temperature}</div>
+	<img
+	  src={weather.current.weather_icons}
+	  alt={weather.current.weather_description}
+	  width='50'
+	  heigth='50'
+	/>
+	<div>wind: {weather.current.wind_speed} mph direction {weather.current.wind_dir}</div>
+      </>
+    ) 
+  }
+}
+
 const FilteredCountry = ({ country }) => {
-  const [weather, setWeather] = useState([])
+  const [weather, setWeather] = useState({})
 
   useEffect(() => {
   const api_key = process.env.REACT_APP_API_KEY
@@ -19,8 +39,8 @@ const FilteredCountry = ({ country }) => {
     axios
       .get(`http://api.weatherstack.com/current?access_key=${api_key}&query=${capital}`)
       .then(response => setWeather(response.data))
-  }, [])
-  console.log('ce cacat esti', weather.current.temperature)
+  }, [country])
+
 
   return (
     <>
@@ -41,15 +61,7 @@ const FilteredCountry = ({ country }) => {
 	width='100'
 	heigth='100'
       />
-      <h2>Weather in {country.capital}</h2>
-      <div>temperature: {weather.current.temperature}</div>
-      <img
-	src={weather.current.weather_icons}
-	alt={weather.current.weather_description}
-	width='50'
-	heigth='50'
-      />
-      <div>wind: {weather.current.wind_speed} mph direction {weather.current.wind_dir}</div>
+      <Weather country={country} weather={weather} />
     </>
   )
 }
