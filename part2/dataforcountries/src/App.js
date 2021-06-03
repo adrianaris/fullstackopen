@@ -11,34 +11,36 @@ const Country = ({ country, setFilter }) => {
 }
 
 const Weather = ({country, weather}) => {
-  if (weather.current === undefined) {
-    return null
-  } else {
     return (
       <>
       <h2>Weather in {country.capital}</h2>
-	<div>temperature: {weather.current.temperature}</div>
+	<div>temperature: {weather.temperature}</div>
 	<img
-	  src={weather.current.weather_icons}
-	  alt={weather.current.weather_description}
+	  src={weather.weather_icons}
+	  alt={weather.weather_description}
 	  width='50'
 	  heigth='50'
 	/>
-	<div>wind: {weather.current.wind_speed} mph direction {weather.current.wind_dir}</div>
+	<div>wind: {weather.wind_speed} mph direction {weather.wind_dir}</div>
       </>
     ) 
-  }
 }
 
 const FilteredCountry = ({ country }) => {
-  const [weather, setWeather] = useState({})
+  const [weather, setWeather] = useState({
+    temperature: null,
+    weather_icons: null,
+    weather_description: null,
+    wind_speed: null,
+    wind_dir: null
+  })
 
   useEffect(() => {
   const api_key = process.env.REACT_APP_API_KEY
   const capital = country.capital
     axios
       .get(`http://api.weatherstack.com/current?access_key=${api_key}&query=${capital}`)
-      .then(response => setWeather(response.data))
+      .then(response => setWeather(response.data.current))
   }, [country])
 
 
