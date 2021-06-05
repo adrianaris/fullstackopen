@@ -19,6 +19,16 @@ const App = () => {
       })
   }, [])
 
+  const updNumber = (person, newNumber) => {
+    if (window.confirm(`${person.name} is already in the phonebook, replace the old number with a new one?`)) { 
+      const changedPerson = { ...person, number: newNumber }
+      pServices
+	.update(person.id, changedPerson).then(returnedPerson => { 
+	  setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+	})
+    }
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = { 
@@ -27,7 +37,7 @@ const App = () => {
     }
 
     persons.map(person => person.name).includes(newName)
-      ? window.alert(`${newName} is already in the phonebook`) 
+      ? updNumber(persons.find(p => p.name === newName), newNumber) 
       : pServices
 	  .create(newPerson)
 	  .then(person => {
