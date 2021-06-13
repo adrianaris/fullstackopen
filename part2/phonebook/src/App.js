@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Persons from './components/Persons'
+import People from './components/People'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import pServices from './services/phonebook'
@@ -7,7 +7,7 @@ import Notification from './components/Notification'
 import Error from './components/Error'
 
 const App = () => {
-  const [ persons, setPersons ] = useState([])
+  const [ people, setPeople ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber] = useState('')
   const [ filter, setFilter ] = useState('')
@@ -17,8 +17,8 @@ const App = () => {
   useEffect(() => {
     pServices 
       .getAll()
-      .then(allPersons => {
-	setPersons(allPersons)
+      .then(allPeople => {
+	setPeople(allPeople)
       })
   }, [])
 
@@ -27,7 +27,7 @@ const App = () => {
       const changedPerson = { ...person, number: newNumber }
       pServices
 	.update(person.id, changedPerson).then(returnedPerson => { 
-	  setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+	  setPeople(people.map(p => p.id !== person.id ? p : returnedPerson))
 	})
     }
   }
@@ -39,12 +39,12 @@ const App = () => {
       number: newNumber
     }
 
-    persons.map(person => person.name).includes(newName)
-      ? updNumber(persons.find(p => p.name === newName), newNumber) 
+    people.map(person => person.name).includes(newName)
+      ? updNumber(people.find(p => p.name === newName), newNumber) 
       : pServices
 	  .create(newPerson)
 	  .then(person => {
-	    setPersons(persons.concat(person))
+	    setPeople(people.concat(person))
 	  })
     setNotification(`Added ${newName}`)
     setTimeout(() => {
@@ -59,15 +59,15 @@ const App = () => {
   const handleFilter = (event) => setFilter(event.target.value)
 
   const peopleToShow = filter === ''
-    ? persons
-    : persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+    ? people
+    : people.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
 
   const dPerson = id => {
-    const person = persons.find(p => p.id === id)
+    const person = people.find(p => p.id === id)
     if (window.confirm(`Delete ${person.name}`)) { 
       pServices
 	.deleteP(id, person).then(deletedP => {
-	  setPersons(persons.filter(p => p.id !== id)) 
+	  setPeople(people.filter(p => p.id !== id)) 
 	})
 	.catch(error => {
 	  setErrorMessage(`Information of ${person.name} has already been removed from server`)
@@ -93,8 +93,8 @@ const App = () => {
 	handleNewNumber={handleNewNumber}
       /> 
       <h3>Numbers</h3>
-      <Persons 
-	persons={peopleToShow} 
+      <People 
+	people={peopleToShow} 
 	dPerson={dPerson}
       />
     </div>
